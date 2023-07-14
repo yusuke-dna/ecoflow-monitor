@@ -6,16 +6,41 @@ import argparse
 import requests
 
 def argument_parser():
-    # Same as before
-    ...
+    # Import the argparse library
+    import argparse
+    # Create the parser
+    my_parser = argparse.ArgumentParser(description='EcoFlow Monitor')
+    # Add the arguments
+    my_parser.add_argument('-u', '--url', type=str, help='URL of the EcoFlow device')
+    my_parser.add_argument('-s', '--serial', type=str, help='Serial number of the EcoFlow device')
+    my_parser.add_argument('-a', '--appkey', type=str, help='App key of the EcoFlow device')
+    my_parser.add_argument('-k', '--secretkey', type=str, help='Secret key of the EcoFlow device')
+    my_parser.add_argument('-f', '--filepath', type=str, help='File path of the log file')
+    # Execute the parse_args() method
+    args = my_parser.parse_args()
+    # Return the arguments
+    return args 
 
 def write_log(filepath:str, data:str):
-    # Same as before
-    ...
+    # Open the file in append mode
+    with open(filepath, 'a') as f:
+        # Write the data to the file
+        f.write(data)
+        # Write a new line
+        f.write('\n')
 
 def dic_to_csv(data_dic:str):
-    # Same as before
-    ...
+    # Get the keys
+    keys = data_dic.keys()
+    # Get the values
+    values = [str(value) for value in data_dic.values()]
+    # Convert the keys to a string
+    keys_str = ','.join(keys)
+    # Convert the values to a string
+    values_str = ','.join(values)
+    # Combine the keys and values strings
+    data_str = keys_str + ',' + values_str
+    return data_str
 
 def ecoflow_get(URL:str, Serial:str, appKey:str, secretKey:str):
     headers = {
