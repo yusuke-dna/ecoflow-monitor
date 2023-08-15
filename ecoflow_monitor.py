@@ -65,18 +65,19 @@ def ecoflow_logger(URL:str, Serial:str, appKey:str, secretKey:str, filepath:str,
     ecoflow_json = ecoflow_get(URL, Serial, appKey, secretKey)
     if ecoflow_json is None:
         return
-    data_dic = ecoflow_json.get('data')
-    data_str = dic_to_csv(data_dic)
+    else:
+        data_dic = ecoflow_json.get('data')
+        data_str = dic_to_csv(data_dic)
     
-    timestamp = datetime.now(pytz.timezone('UTC')).astimezone(pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
-    data = timestamp + ',' + data_str
-    write_log(filepath, data)
-    # charge if battery is lower than 20%
-    if data_dic['soc'] < 20 :
-        r = requests.get(charge_URL)
-    # discharge if battery is charged above 50%
-    elif data_dic['soc'] > 50 :
-        r = requests.get(discharge_URL)
+        timestamp = datetime.now(pytz.timezone('UTC')).astimezone(pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
+        data = timestamp + ',' + data_str
+        write_log(filepath, data)
+        # charge if battery is lower than 20%
+        if data_dic['soc'] < 20 :
+            r = requests.get(charge_URL)
+        # discharge if battery is charged above 50%
+        elif data_dic['soc'] > 50 :
+            r = requests.get(discharge_URL)
 
 args = argument_parser()
 URL = args.url
