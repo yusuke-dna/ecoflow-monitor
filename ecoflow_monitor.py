@@ -73,10 +73,10 @@ def ecoflow_logger(URL:str, Serial:str, appKey:str, secretKey:str, filepath:str,
         data = timestamp + ',' + data_str
         write_log(filepath, data)
         # charge if battery is lower than 20%
-        if data_dic['soc'] < 20 :
+        if data_dic['soc'] < 20 and data_dic['wattsInSum'] == 0 :
             r = requests.get(charge_URL)
         # discharge if battery is charged above 50%
-        elif data_dic['soc'] > 50 :
+        elif data_dic['soc'] > 50 and data_dic['wattsInSum'] != 0  :
             r = requests.get(discharge_URL)
 
 args = argument_parser()
