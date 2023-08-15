@@ -16,6 +16,8 @@ def argument_parser():
     my_parser.add_argument('-a', '--appkey', type=str, help='App key of the EcoFlow device')
     my_parser.add_argument('-k', '--secretkey', type=str, help='Secret key of the EcoFlow device')
     my_parser.add_argument('-f', '--filepath', type=str, help='File path of the log file')
+    my_parser.add_argument('-I', '--on', type=str, help='URL of webhook to turn on charger')
+    my_parser.add_argument('-O', '--off', type=str, help='URL of webhook to turn off charger')
     # Execute the parse_args() method
     args = my_parser.parse_args()
     # Return the arguments
@@ -59,7 +61,7 @@ def ecoflow_get(URL:str, Serial:str, appKey:str, secretKey:str):
     except:
         raise
 
-def ecoflow_logger(URL:str, Serial:str, appKey:str, secretKey:str, filepath:str):
+def ecoflow_logger(URL:str, Serial:str, appKey:str, secretKey:str, filepath:str, charge_URL:str, discharge_URL:str):
     ecoflow_json = ecoflow_get(URL, Serial, appKey, secretKey)
     if ecoflow_json is None:
         return
@@ -69,6 +71,12 @@ def ecoflow_logger(URL:str, Serial:str, appKey:str, secretKey:str, filepath:str)
     timestamp = datetime.now(pytz.timezone('UTC')).astimezone(pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
     data = timestamp + ',' + data_str
     write_log(filepath, data)
+    # charge if battery is lower than 20%
+    if data_dic['soc'] < 20 :
+        r = requests.get(charge_URL)
+    # discharge if battery is charged above 80%
+    elif data_dic['soc'] > 80 :
+        r = requests.get(discharge_URL)
 
 args = argument_parser()
 URL = args.url
@@ -76,7 +84,9 @@ Serial = args.serial
 appKey = args.appkey
 secretKey = args.secretkey
 filepath = args.filepath
+charge_URL = args.on
+discharge_URL = args.off
 
 while True:
-    ecoflow_logger(URL, Serial, appKey, secretKey, filepath)
+    ecoflow_logger(URL, Serial, appKey, secretKey, filepath, charge_URL, discharge_URL)
     time.sleep(300)
