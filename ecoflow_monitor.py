@@ -5,6 +5,8 @@ import pytz
 import argparse
 import requests
 
+charging_status = "Discharging"
+
 def argument_parser():
     # Import the argparse library
     import argparse
@@ -72,12 +74,22 @@ def ecoflow_logger(URL:str, Serial:str, appKey:str, secretKey:str, filepath:str,
         timestamp = datetime.now(pytz.timezone('UTC')).astimezone(pytz.timezone('Asia/Tokyo')).strftime("%Y-%m-%d %H:%M:%S")
         data = timestamp + ',' + data_str
         write_log(filepath, data)
-        # charge if battery is lower than 20%
-        if data_dic['soc'] < 20 and data_dic['wattsInSum'] == 0 :
+        # charge anyway if battery is lower than 10%
+        if data_dic['soc'] < 10
             r = requests.get(charge_URL)
+            charging_status = "Charging"
+        # charge if battery is lower than 15%
+        elif data_dic['soc'] < 15 and charging_status == "Discharging"
+            r = requests.get(charge_URL)
+            charging_status = "Charging"
+        # charge if battery is lower than 40% and solar panel is not active
+        elif data_dic['soc'] < 40 and data_dic['wattsInSum'] == 0 :
+            r = requests.get(charge_URL)
+            charging_status = "Charging"
         # discharge if battery is charged above 50%
-        elif data_dic['soc'] > 50 and data_dic['wattsInSum'] != 0  :
+        elif data_dic['soc'] > 50 and charging_status = "Charging"  :
             r = requests.get(discharge_URL)
+            charging_status = "Discharging"
 
 args = argument_parser()
 URL = args.url
